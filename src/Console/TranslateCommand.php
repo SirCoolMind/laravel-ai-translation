@@ -7,7 +7,7 @@ use SirCoolMind\AiTranslation\Services\AiTranslationService;
 
 class TranslateCommand extends Command
 {
-    protected $signature = 'tw
+    protected $signature = 'ai-translator-lang
         {key : The language key}
         {word? : The text to translate (defaults to key)}
         {--source= : Override default source language}';
