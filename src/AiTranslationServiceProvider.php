@@ -2,29 +2,34 @@
 
 namespace SirCoolMind\AiTranslation;
 
-use Illuminate\Support\ServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 use SirCoolMind\AiTranslation\Console\TranslateCommand;
+use SirCoolMind\AiTranslation\Services\AiTranslationService;
 
-class AiTranslationServiceProvider extends ServiceProvider
+class AiTranslationServiceProvider extends PackageServiceProvider
 {
-    public function boot()
+    public function configurePackage(Package $package): void
     {
-        $this->publishes([
-            __DIR__ . '/../../config/ai-translation.php' => config_path('ai-translation.php'),
-        ], 'config');
-
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                TranslateCommand::class,
-            ]);
-        }
+        /*
+         * This class is a Package Service Provider
+         *
+         * More info: https://github.com/spatie/laravel-package-tools
+         */
+        $package
+            ->name('laravel-ai-translation')
+            ->hasConfigFile('ai-translation')
+            ->hasCommands([TranslateCommand::class])
+            ->hasViews('ai-translation')
+            ->hasRoute('web');
     }
 
-    public function register()
+    public function packageRegistered()
     {
-        // Merge config so it works even if user doesn't publish it
-        $this->mergeConfigFrom(
-            __DIR__ . '/../../config/ai-translation.php', 'ai-translation'
-        );
+        // Optional: Bind it if you want a shorter alias,
+        // but typically PackageServiceProvider handles simple bindings auto-magically.
+        $this->app->singleton(AiTranslationService::class, function () {
+            return new AiTranslationService();
+        });
     }
 }
